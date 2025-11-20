@@ -271,3 +271,9 @@ class Logpoint(TextQueryBackend):
         elif isinstance(cond, ConditionFieldEqualsValueExpression):
             self.modify_condition_from_json_value_construction(cond)
         return super().convert_condition(cond, state)
+
+    def convert_condition_not(self, cond: ConditionNOT, state: ConversionState) -> str:
+        """Overriding to remove space between NOT operator & expr and also wrap in parentheses"""
+        inner_node = cond.args[0]
+        inner = super().convert_condition(inner_node, state).strip()
+        return f"-({inner})"
