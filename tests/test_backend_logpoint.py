@@ -320,6 +320,28 @@ def test_logpoint_filter_not(logpoint_backend: Logpoint):
     assert logpoint_backend.convert(rule) == ["-Field!=*"]
 
 
+def test_logpoint_compact_not_grouping(logpoint_backend: Logpoint):
+    rule = SigmaCollection.from_yaml(
+        """
+            title: Test
+            status: test
+            logsource:
+                category: test_category
+                product: test_product
+            detection:
+                sel1:
+                    fieldA: valueA
+                sel2:
+                    fieldB: valueB
+                condition: not (sel1 or sel2)
+        """
+    )
+
+    assert logpoint_backend.convert(rule) == [
+        '-(fieldA="valueA" OR fieldB="valueB")'
+    ]
+
+
 def test_logpoint_angle_brackets(logpoint_backend: Logpoint):
     """Test for DSL output with < or > in the values"""
     rule = SigmaCollection.from_yaml(
