@@ -1,42 +1,62 @@
-name: Test Real Sigma Rules
+name: Generate Logpoint Output
 
 on: [push, pull_request]
 
 jobs:
-  test-conversion:
+  convert-and-upload:
     runs-on: ubuntu-latest
     steps:
-      # 1. Checkout YOUR code (the backend)
-      - name: Checkout Backend Code
+      # 1. Checkout YOUR modified backend code
+      - name: Checkout Your Code
         uses: actions/checkout@v4
 
-      # 2. Checkout the REAL Sigma Rules
-      - name: Checkout SigmaHQ Rules
+      # 2. Checkout Real Sigma Rules (Windows Process Creation has good regex/negation examples)
+      - name: Checkout Sigma Rules
         uses: actions/checkout@v4
         with:
           repository: SigmaHQ/sigma
           path: sigma_rules
           sparse-checkout: |
             rules/windows/process_creation
-      
+
       # 3. Setup Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
-      # 4. Install Dependencies
+      # 4. Install sigma-cli and YOUR backend
       - name: Install Dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pysigma
-          # If your repo has a pyproject.toml or setup.py, install it:
-          # pip install . 
-          # OR if you just have the file standalone for now, verify pysigma is enough.
+          pip install sigma-cli
+          # This is the magic step: it installs the code in the current folder 
+          # as the "logpoint" backend, overriding the public version.
+          pip install . 
 
-      # 5. Run the Test Script
-      - name: Run Conversion Test
+      # 5. Run 'sigma convert' 
+      # We dump the output to a file so you can read it clearly.
+      # We verify version of plugins to ensure yours is loaded.
+      - name: Run Conversion
         run: |
-          # Ensure python can find your logpoint.py file
-          export PYTHONPATH=$PYTHONPATH:.
-          python tests/test_real_rules.py
+          echo "--- Plugin List (Verify your version is here) ---"
+          sigma plugin list
+          
+          echo "--- Converting Rules ---"
+          # -t logpoint: Use logpoint backend
+          # -p logpoint: Use logpoint pipeline (field mappings)
+          # --skip-unsupported: Don't crash on errors, just give us the queries
+          sigma convert -t logpoint -p logpoint --skip-unsupported sigma_rules/rules/windows/process_creation > output.txt
+
+      # 6. (Optional) Quick Peek in the Logs
+      # This greps for lines starting with "-" (Negation) so you can see them immediately in the Github UI
+      - name: Peek at Negation Results
+        run: |
+          echo "--- Printing first 20 Negation examples found in output ---"
+          grep -m 20 "\-" output.txt || true
+
+      # 7. Upload the full file for you to inspect
+      - name: Upload Output Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: logpoint-conversion-results
+          path: output.txt
