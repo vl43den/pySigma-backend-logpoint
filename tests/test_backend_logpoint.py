@@ -337,9 +337,30 @@ def test_logpoint_compact_not_grouping(logpoint_backend: Logpoint):
         """
     )
 
-    assert logpoint_backend.convert(rule) == [
-        '-(fieldA="valueA" OR fieldB="valueB")'
-    ]
+    assert logpoint_backend.convert(rule) == ['-(fieldA="valueA" OR fieldB="valueB")']
+
+
+def test_logpoint_not_spacing(logpoint_backend: Logpoint):
+    rule = SigmaCollection.from_yaml(
+        """
+            title: Test NOT spacing
+            status: test
+            logsource:
+                category: test_category
+                product: test_product
+            detection:
+                sel1:
+                    fieldA: valueA
+                sel2:
+                    fieldB: valueB
+                condition: not (sel1 or sel2)
+        """
+    )
+
+    converted = logpoint_backend.convert(rule)[0]
+
+    assert "- (" not in converted
+    assert converted.startswith("-(")
 
 
 def test_logpoint_angle_brackets(logpoint_backend: Logpoint):

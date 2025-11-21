@@ -282,12 +282,13 @@ class Logpoint(TextQueryBackend):
             if (
                 arg.__class__ in self.precedence
             ):  # group if AND or OR condition is negated
-                return self.not_token + self.convert_condition_group(arg, state)
+                grouped = self.convert_condition_group(arg, state)
+                return f"{self.not_token}{grouped.lstrip()}"
             expr = self.convert_condition(arg, state)
             if isinstance(
                 expr, DeferredQueryExpression
             ):  # negate deferred expression and pass it to parent
                 return expr.negate()
-            return self.not_token + expr  # convert negated expression to string
+            return f"{self.not_token}{str(expr).lstrip()}"  # convert negated expression to string
         except TypeError:  # pragma: no cover
             raise NotImplementedError("Operator 'not' not supported by the backend")
