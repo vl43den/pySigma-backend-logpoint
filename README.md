@@ -67,7 +67,7 @@ sigma convert -t logpoint -p logpoint_windows rules/windows/process_creation/pro
 ╭─ubuntu@ubuntu
 ╰─$ sigma convert -t logpoint -p logpoint_windows rules/windows/process_creation/proc_creation_win_svchost_masqueraded_execution.yml
 Parsing Sigma rules  [####################################]  100%
-label="Create" label="Process" "process"="*\svchost.exe" - ("process" IN ["C:\Windows\System32\svchost.exe", "C:\Windows\SysWOW64\svchost.exe"] OR file="svchost.exe")
+label="Create" label="Process" "process"="*\svchost.exe" -("process" IN ["C:\Windows\System32\svchost.exe", "C:\Windows\SysWOW64\svchost.exe"] OR file="svchost.exe")
 ```
 
 ## Limitations and Constraints
