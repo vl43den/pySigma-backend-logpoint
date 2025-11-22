@@ -45,7 +45,7 @@ jobs:
           # -t logpoint: Use logpoint backend
           # -p logpoint: Use logpoint pipeline (field mappings)
           # --skip-unsupported: Don't crash on errors, just give us the queries
-          sigma convert -t logpoint --skip-unsupported sigma_rules/rules/windows/process_creation > output.txt
+          sigma convert -t logpoint --without-pipeline --skip-unsupported sigma_rules/rules/windows/process_creation > output.txt
 
       # 6. (Optional) Quick Peek in the Logs
       # This greps for lines starting with "-" (Negation) so you can see them immediately in the Github UI
