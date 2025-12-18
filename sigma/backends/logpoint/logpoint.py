@@ -114,7 +114,8 @@ class Logpoint(TextQueryBackend):
 
     # Value not bound to a field
     # Expression for string value not bound to a field as format string with placeholder {value}
-    unbound_value_str_expression: ClassVar[str] = '"{value}"'
+    # Note: convert_value_str already handles quoting, so no additional quotes needed in template
+    unbound_value_str_expression: ClassVar[str] = '{value}'
     # Expression for number value not bound to a field as format string with placeholder {value}
     unbound_value_num_expression: ClassVar[str] = "{value}"
 

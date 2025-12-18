@@ -449,3 +449,32 @@ def test_logpoint_double_quote_value(logpoint_backend: Logpoint):
     )
 
     assert logpoint_backend.convert(rule) == ['fieldA="valueA" fieldB=\'val"ueB\'']
+
+
+def test_logpoint_keyless_keywords(logpoint_backend: Logpoint):
+    """Test that keyless keyword rules produce single-quoted terms, not double-quoted.
+    
+    This is a regression test for the issue where keyless keywords (like Mimikatz detection)
+    were producing ""value"" instead of "value".
+    """
+    rule = SigmaCollection.from_yaml(
+        """
+            title: Mimikatz Keywords Detection
+            status: test
+            logsource:
+                category: test_category
+                product: test_product
+            detection:
+                keywords:
+                    - mimikatz
+                    - sekurlsa
+                    - kerberos::list
+                condition: keywords
+        """
+    )
+
+    result = logpoint_backend.convert(rule)
+    # Should produce single-quoted terms, not double-quoted
+    assert result == ['"mimikatz" OR "sekurlsa" OR "kerberos::list"']
+    # Verify no double-quoting
+    assert '""' not in result[0]
