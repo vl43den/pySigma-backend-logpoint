@@ -60,11 +60,11 @@ def generate_windows_sysmon_enriched_query(
     identifier_template: str = "windows_sysmon_{category}",
 ) -> List[ProcessingItem]:
     """Generate processing items for all Windows sysmon mappings for addition of labels.
-    :param identifier_template: Template for processing item identifier. Usually, the defaults are
-        fine. Should contain service placeholder if changed.
+    :param identifier_template: Template for processing item identifier.  Usually, the defaults are
+        fine.  Should contain service placeholder if changed.
     :type identifier_template: str
     :return: List of ProcessingItem that can be used in the items attribute of a ProcessingPipeline
-        object. Usually, an additional field name mapping between the Sigma taxonomy and the target
+        object.  Usually, an additional field name mapping between the Sigma taxonomy and the target
         system field names is required.
     :rtype: List[ProcessingItem]
     """
