@@ -1,5 +1,5 @@
 import re
-from typing import Dict, Union, List
+from typing import Dict, Union, List, ClassVar, Pattern
 
 from sigma.pipelines.common import (
     logsource_windows_process_creation,

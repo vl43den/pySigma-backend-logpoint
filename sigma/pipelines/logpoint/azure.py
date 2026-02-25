@@ -1,7 +1,5 @@
 import re
-from sigma.processing.conditions import (
-    LogsourceCondition,
-)
+from sigma.processing.conditions import LogsourceCondition
 from sigma.processing.pipeline import ProcessingItem, ProcessingPipeline
 from sigma.processing.transformations import (
     FieldMappingTransformation,
